@@ -1,6 +1,10 @@
 import unittest
 
-from inline_markdown import split_nodes_delimiter
+from inline_markdown import (
+    split_nodes_delimiter,
+    extract_markdown_images,
+    extract_markdown_links,
+)
 from textnode import (
     TextNode,
     text_type_text,
@@ -101,6 +105,55 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode(" word", text_type_text),
             ],
             new_nodes,
+        )
+
+
+class TestExtractMarkdown(unittest.TestCase):
+    def test_md_image(self):
+        text = "This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and ![another](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png)"
+        extracted = extract_markdown_images(text)
+        self.assertEqual(
+            extracted,
+            [
+                (
+                    "image",
+                    "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png",
+                ),
+                (
+                    "another",
+                    "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png",
+                ),
+            ],
+        )
+
+    def test_md_link(self):
+        text = "This is text with a [link](https://www.example.com) and [another](https://www.example.com/another)"
+        extracted = extract_markdown_links(text)
+        self.assertEqual(
+            extracted,
+            [
+                ("link", "https://www.example.com"),
+                ("another", "https://www.example.com/another"),
+            ],
+        )
+
+    # boot.dev
+    def test_extract_markdown_images(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_extract_markdown_links(self):
+        matches = extract_markdown_links(
+            "This is text with a [link](https://boot.dev) and [another link](https://blog.boot.dev)"
+        )
+        self.assertListEqual(
+            [
+                ("link", "https://boot.dev"),
+                ("another link", "https://blog.boot.dev"),
+            ],
+            matches,
         )
 
 
