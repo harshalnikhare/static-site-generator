@@ -43,7 +43,3 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(
             "TextNode(This is a text node, text, https://www.boot.dev)", repr(node)
         )
-
-
-if __name__ == "__main__":
-    unittest.main()
